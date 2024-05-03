@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Album{% endblock %}
+
+{% block main %}
+<h4>{{ album_name }}</h4>
+<div class="d-flex flex-row justify-content-evenly flex-wrap">
+    {% for pic in content %}
+    <div class="p-1" style="flex: 0 0 33%;">
+        <a href="{{ url_for('photo', photo_id=pic['photo_id']) }}">
+            <img src="{{ url_for('static', filename='uploads/' + pic['image_link'][17:]) }}" class="img-fluid">
+        </a>
+        {% if pic['caption'] is not none %}
+        <div class="caption">{{ pic['caption'] }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock main %}

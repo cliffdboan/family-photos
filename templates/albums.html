@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Albums{% endblock %}
+
+{% block main %}
+<div class="d-flex flex-row justify-content-evenly flex-wrap">
+    {% for pair in album_pairs %}
+    <div class="p-1 album-container" style="flex: 0 0 33%;">
+        <a href="{{ url_for('album', album_name=pair[1])}}">
+            <img src="{{ pair[0]['image_link'] }}" class="img-fluid">
+        </a>
+        <div class="title"><b>{{ pair[1] }}</b></div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock main %}

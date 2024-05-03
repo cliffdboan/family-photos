@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block title %}Upload{% endblock %}
+
+{% block main %}
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <div class="input-group mb-2 col-2">
+        <label class="input-group-text" for="file">Select Photo: </label>
+        <input type="file" class="form-control" name="file" id="file" required>
+    </div>
+    <div class="row">
+        <select id="albumDrop" class="form-select m-2" name="dropdown">
+            <option value="new album">New Album</option>
+            {% for album in albums %}
+            <option value="{{ album }}">{{ album }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="row">
+        <div id="albumInputDiv" class="col-3">
+            <input id="newAlbum" class="form-control ps-3 m-1" name="album" placeholder="Album Name..."
+                required style="display: block;">
+        </div>
+        <div id="captionDiv" class="col-5">
+            <input class="form-control ps-3 m-1" name="caption" placeholder="Caption...">
+        </div>
+        <div id="setCover" class="form-check col-auto m-2">
+            <input class="form-check-input" id="coverCheckbox" type="checkbox" name="set_cover" value="true" checked>
+            <label class="form-check-label" for="coverCheckbox">Set Cover?</label>
+        </div>
+    </div>
+    <button class="btn btn-secondary mt-3" type="submit">Upload</button>
+
+    <script>
+        const albumInputDiv = document.getElementById("albumInputDiv");
+        const albumSelect = document.getElementById("albumDrop");
+        const newAlbum = document.getElementById("newAlbum");
+        const setCover = document.getElementById("coverCheckbox");
+
+        // when "New Album" is selected, display the input field and make it required
+        // also, move the caption input over to adjust visually
+        albumSelect.addEventListener('change', () => {
+            if (albumSelect.value === "new album") {
+                newAlbum.style.display = "block";
+                newAlbum.required = true;
+                setCover.checked = true;
+                setCover.disabled = true;
+
+            } else {
+                albumInputDiv.className = "col-3";
+                newAlbum.style.display = "none";
+                newAlbum.required = false;
+                setCover.disabled = false;
+
+                albumInputDiv.className = "";
+            }
+        });
+    </script>
+
+</form>
+{% endblock main %}

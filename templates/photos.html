@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Photos{% endblock %}
+
+{% block main %}
+<div class="d-flex flex-row justify-content-evenly flex-wrap">
+    {% for pic in pictures %}
+    {% if pic['deleted'] != "True" %}
+    <div class="p-1" style="flex: 0 0 25%;">
+        <a href="{{ url_for('photo', photo_id=pic['photo_id']) }}">
+            <img src="{{ url_for('static', filename='uploads/' + pic['image_link'][17:]) }}" class="img-fluid">
+        </a>
+        {% if pic['caption'] is not none %}
+        <div class="caption">{{ pic['caption'] }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock main %}
