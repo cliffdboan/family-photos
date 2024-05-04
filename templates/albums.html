@@ -7,8 +7,8 @@
     <div class="p-1 album-container" style="flex: 0 0 33%;">
         <a href="{{ url_for('album', album_name=pair[1])}}">
             <img src="{{ pair[0]['image_link'] }}" class="img-fluid">
+            <div class="title" style="color: black;"><b>{{ pair[1] }}</b></div>
         </a>
-        <div class="title"><b>{{ pair[1] }}</b></div>
     </div>
     {% endfor %}
 </div>

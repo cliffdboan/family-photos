@@ -8,18 +8,20 @@
         <input type="file" class="form-control" name="file" id="file" required>
     </div>
     <div class="row">
-        <select id="albumDrop" class="form-select m-2" name="dropdown">
-            <option value="new album">New Album</option>
-            {% for album in albums %}
-            <option value="{{ album }}">{{ album }}</option>
-            {% endfor %}
-        </select>
+        <div class="col-4">
+            <select id="albumDrop" class="form-select my-2" name="dropdown">
+                <option value="new album">New Album</option>
+                {% for album in albums %}
+                <option value="{{ album }}">{{ album }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div id="albumInputDiv" class="col-4 m-1">
+                <input id="newAlbum" class="form-control ps-3 m-1" name="album" placeholder="Album Name..."
+                    required style="display: block;">
+            </div>
     </div>
     <div class="row">
-        <div id="albumInputDiv" class="col-3">
-            <input id="newAlbum" class="form-control ps-3 m-1" name="album" placeholder="Album Name..."
-                required style="display: block;">
-        </div>
         <div id="captionDiv" class="col-5">
             <input class="form-control ps-3 m-1" name="caption" placeholder="Caption...">
         </div>
@@ -45,8 +47,8 @@
                 setCover.checked = true;
                 setCover.disabled = true;
 
+                albumInputDiv.className = "col-4 m-1";
             } else {
-                albumInputDiv.className = "col-3";
                 newAlbum.style.display = "none";
                 newAlbum.required = false;
                 setCover.disabled = false;

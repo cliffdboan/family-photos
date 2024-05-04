@@ -53,24 +53,85 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route("/add_to_album/int<album_id>/<int:img_id>")
-def add_to_album(album_id, img_id):
+@app.route("/add_to_album/<int:img_id>", methods=["GET", "POST"])
+def add_to_album(img_id):
     """Add photo to album"""
     # redirect to login page if not logged in
     if not "user_id" in session:
         flash("Please login to add photos to albums", "primary")
         return redirect("/login")
 
+    # get album info from webpage
+    if request.form.get("change_album") == "new album":
+        album_name = request.form.get("new_name")
+    else:
+        album_name = request.form.get("change_album")
+
     # open the database
     with engine.begin() as conn:
         # check if the album exists. if not, create it and add to album
-
-        # update the photo table
-        conn.execute(update(photo_table).where(
-            photo_table.c.photo_id == img_id
-        ).values(
-            photo_album_id = album_id
+        album_query_result = conn.execute(select(album_table).where(
+            album_table.c.user_id == session["user_id"],
+            album_table.c.album_name == album_name
         ))
+        result = album_query_result.fetchone()
+        if result is None:
+            # add the album to table, and return its new id
+            album_id_obj = conn.execute(insert(album_table).values(
+                user_id = session["user_id"],
+                album_name = album_name
+            ).returning(
+                album_table.c.album_id
+            ))
+            album_id = album_id_obj.fetchone()[0]
+        else:
+            # get the album id from the query result
+            album_id = result[0]
+
+        # update the photo table, setting the album cover if a new album
+        if request.form.get("change_album") == "new album":
+            conn.execute(update(photo_table).where(
+                photo_table.c.photo_id == img_id
+            ).values(
+                photo_album_id = album_id,
+                album_cover = "true"
+            ))
+        else:
+            conn.execute(update(photo_table).where(
+                photo_table.c.photo_id == img_id
+            ).values(
+                photo_album_id = album_id
+            ))
+
+        # finally, make sure all albums have a cover photo
+        albums = conn.execute(select(album_table.c.album_id).where(
+            photo_table.c.user_id == session["user_id"]
+        ))
+        # check if each album has a cover photo set
+        for album in albums:
+            cover = conn.execute(select(photo_table).where(
+                photo_table.c.user_id == session["user_id"],
+                photo_table.c.photo_album_id == album[0],
+                photo_table.c.deleted == "false",
+                photo_table.c.album_cover == "true"
+            )).fetchone()
+
+            # if cover is not set, grab the first image
+            if not cover:
+                first_img = conn.execute(select(photo_table.c.photo_id).where(
+                    photo_table.c.user_id == session["user_id"],
+                    photo_table.c.photo_album_id == album[0],
+                    photo_table.c.deleted == "false"
+                )).fetchone()
+
+                # set the image as the cover
+                if first_img:
+                    conn.execute(update(photo_table).where(
+                        photo_table.c.photo_id == first_img[0]
+                    ).values(
+                        album_cover = "true"
+                    ))
+
 
     return redirect(f"/albums")
 
@@ -95,25 +156,20 @@ def albums():
 
     # open the database
     with engine.begin() as conn:
-        # get the cover images for each album
-        covers_sql = select(photo_table).where(
+        # get the album info and names, sorting by name
+        album_info_sql = select(photo_table, album_table.c.album_name).where(
             photo_table.c.user_id == session["user_id"],
             photo_table.c.deleted == "false",
             photo_table.c.album_cover == "true"
-        )
-        images = conn.execute(covers_sql)
-        for img in images:
-            album_covers.append(img)
+        ).join(
+            album_table,
+            album_table.c.album_id == photo_table.c.photo_album_id
+        ).order_by(album_table.c.album_name)
 
-        # get the names of each album and add them to the list
-        for album in album_covers:
-            name_objects = conn.execute(
-                select(album_table.c.album_name).where(
-                    album_table.c.album_id == album.photo_album_id
-                )
-            )
-            for name in name_objects:
-                album_names.append(name[0])
+        album_info = conn.execute(album_info_sql)
+        for data in album_info:
+            album_covers.append(data)
+            album_names.append(data.album_name)
 
     # zip the lists together for pairing when rendering
     album_pairs = zip(album_covers, album_names)
@@ -235,7 +291,7 @@ def photos():
 
     # query database for photos
     with engine.begin() as conn:
-        sql = select(photo_table).where(photo_table.c.user_id == session["user_id"])
+        sql = select(photo_table).where(photo_table.c.user_id == session["user_id"]).order_by(photo_table.c.photo_id.desc())
         rows = conn.execute(sql)
 
     # render template

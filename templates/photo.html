@@ -2,40 +2,66 @@
 {% block title %}Your Photo{% endblock %}
 
 {% block main %}
-<div class="row">
-    <div class="p-1">
-        <img src="{{ url_for('static', filename='uploads/' + image['image_link'][17:]) }}" class="img-fluid"
-            style="max-width: 50%;">
-        {% if image['caption'] is not none %}
-        <div class="caption">{{ image['caption'] }}</div>
-        {% endif %}
+<div class="p-1">
+    <img src="{{ url_for('static', filename='uploads/' + image['image_link'][17:]) }}" class="img-fluid"
+        style="max-width: 50%;">
+    {% if image['caption'] is not none %}
+    <div class="caption">{{ image['caption'] }}</div>
+    {% endif %}
+</div>
+<div class="row justify-content-center m-1">
+    <div class="col-auto me-5">
+        <form action="{{ url_for('set_cover', photo_id=image['photo_id'], album_id=image['photo_album_id']) }}"
+            method="post">
+            <button class="btn btn-primary" name="set_cover" value="true">Set Cover</button>
+        </form>
+    </div>
+    <div class="col-auto ms-5">
+        <form action="{{ url_for('delete', id=image['photo_id']) }}" method="post">
+            <button id="deleteButton" class="btn btn-danger" name="delete_photo"
+                onclick="return confirm('Delete image?')" value="Delete">Delete</button>
+        </form>
     </div>
 </div>
-<form action="{{ url_for('delete', id=image['photo_id']) }}" method="post">
-    <button id="deleteButton" class="btn btn-danger" name="delete_photo" onclick="return confirm('Delete image?')"
-        value="Delete">Delete</button>
-</form>
-<form action="{{ url_for('set_cover', photo_id=image['photo_id'], album_id=image['photo_album_id']) }}" method="post">
-    <button class="btn btn-primary m-1" name="set_cover" value="true">Set Cover</button>
-</form>
-<form action="{{ url_for('add_to_album', img_id=image['photo_id'], album_id=image['photo_id']) }}">
-    <select class="form-select m-1 col-3" name="change_album">
-        <option value="new album">New Album...</option>
-        {% for album in albums %}
-        <option value="{{ album }}">{{ album }}</option>
-        {% endfor %}
-    </select>
+<div class="row justify-content-center">
+    <div class="col-4">
+        <form action="{{ url_for('add_to_album', img_id=image['photo_id']) }}"
+            method="post">
+            <select class="form-select m-1 col-4" id="albumDrop" name="change_album">
+                <option value="new album">New Album...</option>
+                {% for album in albums %}
+                <option value="{{ album }}">{{ album }}</option>
+                {% endfor %}
+            </select>
+    </div>
+    <div id="albumInputDiv" class="col-3">
+        <input id="newAlbum" class="form-control ps-3 m-1" name="new_name" placeholder="Album Name..." required
+            style="display: block;">
+    </div>
     <div class="row justify-content-center">
-        <div id="albumInputDiv" class="col-3">
-            <input id="newAlbum" class="form-control ps-3 m-1" name="album" placeholder="Album Name..." required
-                style="display: block;">
-        </div>
         <button class="btn btn-primary m-1 col-auto" name="set_album">Add to Album</button>
     </div>
+</div>
 </form>
 
 
 <script>
     const albumInputDiv = document.getElementById("albumInputDiv");
+    const albumSelect = document.getElementById("albumDrop");
+    const newAlbum = document.getElementById("newAlbum");
+
+    albumSelect.addEventListener('change', () => {
+        if (albumSelect.value === "new album") {
+            newAlbum.style.display = "block";
+            newAlbum.required = true;
+
+            albumInputDiv.className = "col-3"
+        } else {
+            newAlbum.style.display = "none";
+            newAlbum.required = false;
+
+            albumInputDiv.className = "";
+        }
+    })
 </script>
 {% endblock main %}
