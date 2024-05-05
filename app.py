@@ -395,6 +395,28 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route("/set_caption/<int:img_id>", methods=["POST"])
+def set_caption(img_id):
+    """Set a new caption for photo"""
+    # if user is not logged in, redirect to login page
+    if not session["user_id"]:
+        flash("Please login to set a caption", "primary")
+        return redirect("/login")
+
+    # open database
+    with engine.begin() as conn:
+        # set caption
+        caption = request.form.get("caption")
+        sql = update(photo_table).where(
+            photo_table.c.photo_id == img_id,
+            photo_table.c.user_id == session["user_id"]
+            ).values(caption = caption)
+        conn.execute(sql)
+
+        # redirect to photo page
+        flash("Caption set", "success")
+        return redirect(f"/photo/{img_id}")
+
 @app.route("/set_cover/<int:album_id>/<int:photo_id>", methods=["POST"])
 def set_cover(photo_id, album_id):
     """Set album cover for selected photo"""

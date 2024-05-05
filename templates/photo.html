@@ -6,20 +6,30 @@
     <img src="{{ url_for('static', filename='uploads/' + image['image_link'][17:]) }}" class="img-fluid"
         style="max-width: 50%;">
     {% if image['caption'] is not none %}
-    <div class="caption">{{ image['caption'] }}</div>
+    <div class="caption"><caption>{{ image['caption'] }}</caption></div>
     {% endif %}
 </div>
 <div class="row justify-content-center m-1">
     <div class="col-auto me-5">
         <form action="{{ url_for('set_cover', photo_id=image['photo_id'], album_id=image['photo_album_id']) }}"
             method="post">
-            <button class="btn btn-primary" name="set_cover" value="true">Set Cover</button>
+            <button class="btn btn-primary" name="set_cover" value="true">Make Cover</button>
         </form>
     </div>
     <div class="col-auto ms-5">
         <form action="{{ url_for('delete', id=image['photo_id']) }}" method="post">
             <button id="deleteButton" class="btn btn-danger" name="delete_photo"
                 onclick="return confirm('Delete image?')" value="Delete">Delete</button>
+        </form>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-4">
+        <form action="{{ url_for('set_caption', img_id=image['photo_id']) }}", method="post">
+            <div class="input-group">
+                <input class="form-control" name="caption" placeholder="Caption...">
+                <button class="btn btn-primary" type="submit" name="set_caption">Set Caption</button>
+            </div>
         </form>
     </div>
 </div>
