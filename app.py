@@ -395,7 +395,8 @@ def register():
             # keep user logged in
             for row in conn.execute(select(user_table.c.id).where(user_table.c.username == username.lower())):
                 session["user_id"] = row.id
-            return redirect("/")
+            flash("Registration successful! Upload your first image", "success")
+            return redirect("/upload")
 
     else:
         return render_template("register.html")
@@ -481,7 +482,7 @@ def upload():
             flash("No file part", "danger")
             return redirect("/upload")
 
-        # get file and save it to static uploads
+        # get file and save it to static uploads if it is the correct format
         file = request.files["file"]
 
         if file.filename == "":
@@ -541,6 +542,7 @@ def upload():
 
         return redirect("/")
     else:
+        # store all album names in a list
         album_names = []
         with engine.begin() as conn:
             for row in conn.execute(select(album_table.c.album_name).where(
