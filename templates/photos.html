@@ -10,7 +10,9 @@
             <img src="{{ url_for('static', filename='uploads/' + pic['image_link'][17:]) }}" class="img-fluid">
         </a>
         {% if pic['caption'] is not none %}
-        <div class="caption"><caption>{{ pic['caption'] }}</caption></div>
+        <div class="caption">
+            <caption>{{ pic['caption'] }}</caption>
+        </div>
         {% endif %}
     </div>
     {% endif %}

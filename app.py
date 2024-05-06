@@ -53,6 +53,11 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+@app.errorhandler(404)
+def page_not_found(error):
+    """404 page"""
+    return render_template("404.html"), 404
+
 @app.route("/add_to_album/<int:img_id>", methods=["GET", "POST"])
 def add_to_album(img_id):
     """Add photo to album"""
