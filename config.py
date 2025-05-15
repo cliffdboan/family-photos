@@ -1,4 +1,4 @@
 
-SECRET_KEY = '8124876b9d9569762ca387771b0878f1907007bfdaa5bfb444aed35a74bf7589'
+SECRET_KEY = "Some_key"
 
 DATABASE_URL = "sqlite+pysqlite:///family_photos.db"
