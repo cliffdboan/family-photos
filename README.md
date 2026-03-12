@@ -1,24 +1,47 @@
-# Alright!
-Let's get to it. This is Family Photos.
-This is my final project for Harvard Extension's CSCI-E 50.
+# Family Photos
 
-Utilizing Flask, python, and some JS/HTML/CSS, this is a website that allows users to
-register an account, upload and view photos in groups of albums.
+A web application for organizing and sharing family photos in albums.
 
-The project is fairly straightforward to run, but there are a number of dependencies
-needed to run it. You'll need to install `flask`, `sqlalchemy`, `flask_session`,
-and `werkzeug`.
+## About
 
-You'll also need a sqlite database, which, right now, is fairly simple. There's a users table, which holds an id, username, email,
-and a password hash. Then there's an albums table which holds
-an album id, the user id, and the album name. Finally, a photos table
-which holds ids for the photo, user, and album (referencing the photo album id),
-an image link to retrieve the photo, a caption, whether the image is deleted,
-and if the photo is the album's cover or not.
+Family Photos is a Flask-based photo management system developed as a final project for Harvard Extension's CSCI-E 50. Users can register accounts, create albums, and upload photos with captions.
 
-The images are uploaded using a post method that uploads the image
-and stores it in an uploads folder within the static folder. The
-links to the photos are stored in the database, and called upon within each webpage. When deleted, the image is not removed, but
-the image is no longer rendered on the webpage. Not great, but it sort of works.
+## Features
 
-In terms of running the project, as long as the dependencies are within the project, all you need to do is `flask run`!
+- User authentication and registration
+- Album creation and management
+- Photo uploads with captions
+- Album cover photo selection
+- Soft delete functionality for photos
+
+## Technology Stack
+
+- **Backend**: Flask, SQLAlchemy
+- **Frontend**: HTML, CSS, JavaScript
+- **Database**: SQLite
+- **Session Management**: Flask-Session
+- **Security**: Werkzeug (password hashing)
+
+## Database Schema
+
+- **users**: id, username, email, password_hash
+- **albums**: album_id, user_id, album_name
+- **photos**: photo_id, user_id, album_id, image_link, caption, is_deleted, is_cover
+
+## Installation
+
+1. Install dependencies:
+```bash
+pip install flask sqlalchemy flask-session werkzeug
+```
+
+2. Run the application:
+```bash
+flask run
+```
+
+## Notes
+
+- Uploaded images are stored in `static/uploads/`
+- Deleted photos are marked as deleted in the database but files remain on disk
+- Photo links are stored in the database and rendered dynamically
