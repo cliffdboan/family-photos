@@ -32,7 +32,7 @@ Family Photos is a Flask-based photo management system developed as a final proj
 
 1. Install dependencies:
 ```bash
-pip install flask sqlalchemy flask-session werkzeug
+pip install -r requirements.txt
 ```
 
 2. Run the application:
